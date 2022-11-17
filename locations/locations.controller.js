@@ -11,27 +11,50 @@ router.get('/', (req, res) => {
 })
 
 router.get('/locations', async(req, res) => {
-    const locations = await Location.find()
-    return res.status(200).send(locations)
+    try {
+        const locations = await Location.find()
+        return res.status(200).send(locations)
+    } catch (e) {
+        if (e.message === "Locations not found") return res.status(404).send("Error 404, Locations not found :/")
+        return res.status(400).send("Bad Request, Try again !")
+    }
 })
 
 router.get('/locations/:id', async(req,res) =>{
-    const locations = await locationsService.findOne(req.params['id'])
-    return res.status(200).send(locations)
+    try {
+    const location = await locationsService.findOne(req.params['id'])
+    return res.status(200).send(location) 
+    } catch (e) {
+        if (e.message === "Location not found") return res.status(404).send("Error 404, Location not found :(")
+        return res.status(400).send("Bad Request, Try again !")
+    }
 })
 
 router.post('/locations', async (req,res, next) =>{
-    const locations = await locationsService.addLocation({...req.body, endDate:new Date(req.body.endDate), startDate: new Date(req.body.startDate)})
+    try {
+    const locations = await locationsService.addLocation({...req.body})
     return res.status(201).send(locations)
+    } catch (e) {
+        if (e.message === "Missing film name") return res.status(400).send("The film name is not here, how am I supposed to add this")
+        return res.status(400).send("Bad Request, Try again !")
+    }
 })
 
 router.delete('/locations/:id', async (req,res)=>{
-    const location = await locationsService.deleteById(req.params.id)
-    return res.status(200).send(location)
+    try{
+        const location = await locationsService.deleteById(req.params.id)
+        return res.status(200).send(location)
+    } catch(e) {
+        return res.status(400).send("Bad Request, Try again !")
+    }
 })
 router.put('/locations/:id', async (req,res)=>{
-    const location = await locationsService.updateLocation(req.params.id, {...req.body, endDate:new Date(req.body.endDate), startDate: new Date(req.body.startDate)})
-    return res.status(200).send(location)
+    try {
+        const location = await locationsService.updateLocation(req.params.id, {...req.body, endDate:new Date(req.body.endDate), startDate: new Date(req.body.startDate)})
+        return res.status(200).send(location)
+    } catch(e) {
+        return res.status(400).send("Bad Request, Try again !")
+    }
 })
 
 module.exports = router

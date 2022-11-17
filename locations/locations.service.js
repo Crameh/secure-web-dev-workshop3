@@ -2,25 +2,33 @@
 
 const Location = require('./locations.model')
 
-function findAll () {
-	return Location.find()
+async function findAll () {
+	const locations = await Location.find()
+    if (!locations) throw new Error("Locations not found")
+    return locations
 }
-function findOne(id){
-    return Location.findById(id);
-}
-
-function addLocation(data){
-    const instance = new Location(data)
-    instance.save()
-}
-
-
-function deleteByID(id){
-    return Location.findOneAndDelete( {_id : id});
+async function findOne(id){   
+    const location = await Location.findById(id);
+    if (!location) throw new Error("Location not found")
+    return location
 }
 
+async function addLocation(data){
+    try{
+        const instance = new Location(data)
+        return instance.save()
+    } catch(e) {
+        throw new Error("Missing film name")
+    }
+}
 
-function updateLocation(id, update){
+async function deleteByID(id){
+    const location = await findOne(id)
+    return location.remove
+    //return Location.findOneAndDelete( {_id : id});
+}
+
+async function updateLocation(id, update){
     return Location.updateOne({ _id: id }, update);
 }
 

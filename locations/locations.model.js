@@ -5,7 +5,7 @@ const filmSchema = new mongoose.Schema({
 	filmType: String,
 	filmProducerName: String,
 	endDate: Date,
-	filmName: String,
+	filmName: {type: String, required: true},
 	district: Number,
 	geolocation: {
 		coordinates: [Number],
