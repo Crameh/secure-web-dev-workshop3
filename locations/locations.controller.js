@@ -22,8 +22,8 @@ router.get('/locations', async(req, res) => {
 
 router.get('/locations/:id', async(req,res) =>{
     try {
-    const location = await locationsService.findOne(req.params['id'])
-    return res.status(200).send(location) 
+        const location = await locationsService.findOne(req.params['id'])
+        return res.status(200).send(location) 
     } catch (e) {
         if (e.message === "Location not found") return res.status(404).send("Error 404, Location not found :(")
         return res.status(400).send("Bad Request, Try again !")
@@ -32,8 +32,8 @@ router.get('/locations/:id', async(req,res) =>{
 
 router.post('/locations', async (req,res, next) =>{
     try {
-    const locations = await locationsService.addLocation({...req.body})
-    return res.status(201).send(locations)
+        const locations = await locationsService.addLocation({...req.body})
+        return res.status(201).send(locations)
     } catch (e) {
         if (e.message === "Missing film name") return res.status(400).send("The film name is not here, how am I supposed to add this")
         return res.status(400).send("Bad Request, Try again !")
