@@ -7,6 +7,7 @@ require('../strategies/local.js');
 
 router.get('/users', async (req, res) => {
 	try {
+        console.log("je suis dans /users")
         const users = await userService.findAll()
         return res.status(200).send(users)
     } catch (e) {
@@ -15,7 +16,7 @@ router.get('/users', async (req, res) => {
 });
 
 router.get('/users/:id', (req, res) => {
-	return res.status(200).send("Get one user")
+	return res.status(200).send("Get one user !")
 });
 
 router.post('/users/register', async (req, res) => {
@@ -28,8 +29,11 @@ router.post('/users/register', async (req, res) => {
     
 });
 
-router.post('/users/login', passport.authenticate('local', {session : false, successRedirect : './users'}));
-//router.post('/users/login', async(req, res) => res.status(200).send(await userService.checkPassword(req.body.username, req.body.password)))
+router.post('/users/login', passport.authenticate('local', {session : false, failureRedirect : '/'}), async (req, res) => {
+    if (req.user == 404) return res.status(404).send('Incorrect username')
+    if (req.user == 403) return res.status(403).send('Incorrect password')
+    else return res.status(200).send(await User.findOne({username: req.body.username}))
+});
 
 router.put('/users/:id', (req, res) => {
 	return res.status(200).send("Put user")
