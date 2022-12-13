@@ -11,7 +11,6 @@ app.use(bodyParser.json())
 app.use(locationController)
 app.use(userController)
 app.use(passport.initialize())
-//app.use(passport.session())
 
 app.listen(port, async () => {
     const result = await mongoose.connect(process.env.MONGO_URI);

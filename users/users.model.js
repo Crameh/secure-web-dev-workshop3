@@ -8,21 +8,14 @@ const userSchema = new mongoose.Schema({
   authToken: {
     type: String,
     required: true
+  },
+  role: {
+    type: String,
+    required: true
   }
 })
-
-const matchPassword = async function (password) {
-  try {
-    return await bcrypt.compare(password, this.password);
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-
 
 const User = mongoose.model('User', userSchema)
 
 module.exports = User
-module.exports.matchPassword = this.matchPassword
-module.exports.generateAuthTokenAndSaveUser = this.generateAuthTokenAndSaveUser
+

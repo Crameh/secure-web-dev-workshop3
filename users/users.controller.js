@@ -5,19 +5,7 @@ const userService = require('./users.service');
 const passport = require('passport');
 require('../strategies/local.js');
 
-router.get('/users', async (req, res) => {
-	try {
-        console.log("je suis dans /users")
-        const users = await userService.findAll()
-        return res.status(200).send(users)
-    } catch (e) {
-        return res.status(400).send("Bad Request, Try again !")
-    }
-});
-
-router.get('/users/:id', (req, res) => {
-	return res.status(200).send("Get one user !")
-});
+const roleMiddleware = (allowedRoles) => (req, res, next) => allowedRoles.includes(req.user?.role) ? next() : res.status(403).send()
 
 router.post('/users/register', async (req, res) => {
     try {
@@ -35,16 +23,25 @@ router.post('/users/login', passport.authenticate('local', {session : false, fai
     else return res.status(200).send(await User.findOne({username: req.body.username}))
 });
 
-router.put('/users/:id', (req, res) => {
-	return res.status(200).send("Put user")
+router.get('/users', passport.authenticate('jwt', {session: false}), roleMiddleware(['admin']), async (req, res) => {
+	try {
+        const users = await userService.findAll()
+        return res.status(200).send(users)
+    } catch (e) {
+        return res.status(400).send("Bad Request, Try again !")
+    }
 });
 
-router.patch('/users/:id', (req, res) => {
-	return res.status(200).send("Patch user")
+router.get('/users/me', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    return res.status(200).send(await User.findOne({username: req.user.username}))
 });
 
-router.delete('/users/:id', (req, res) => {
-	return res.status(200).send("Delete user")
+router.patch('/users/me', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    return res.status(200).send(await userService.updateUser(req.user._id, req.body))
+});
+
+router.delete('/users/me', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    return res.status(200).send(await userService.deleteUser(req.user._id))
 });
 
 module.exports = router

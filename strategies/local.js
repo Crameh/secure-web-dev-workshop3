@@ -3,6 +3,8 @@ const passport = require('passport')
 const LocalStrategy = require("passport-local").Strategy;
 const User = require("../users/users.model");
 const userService = require("../users/users.service")
+const JwtStrategy = require('passport-jwt').Strategy
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
@@ -14,6 +16,17 @@ passport.use(new LocalStrategy(
     })
   }
 ));
+
+const opts = {}
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
+
+passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
+  User.findOne({_id: jwt_payload.sub}, function(err, user) {
+    if (err) return done(err, false);
+    if (user) return done(null, user);
+  });
+}));
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);
