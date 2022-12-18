@@ -14,18 +14,15 @@ async function findOne(id){
 }
 
 async function addLocation(data){
-    try{
-        const instance = new Location(data)
-        return instance.save()
-    } catch(e) {
-        throw new Error("Missing film name")
-    }
+    if (!data) throw new Error("Data null")
+    const instance = new Location(data)
+    return instance.save()
 }
 
 async function deleteByID(id){
-    const location = await findOne(id)
-    return location.remove
-    //return Location.findOneAndDelete( {_id : id});
+    const location = await Location.findById(id);
+    if (!location) throw new Error("Location not found")
+    return location.remove()
 }
 
 async function updateLocation(id, update){

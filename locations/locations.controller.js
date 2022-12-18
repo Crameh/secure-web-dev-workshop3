@@ -2,11 +2,11 @@
 // Business-Logic layer
 
 const router = require('express').Router()
-const { default: mongoose } = require('mongoose')
+//const { default: mongoose } = require('mongoose')
 const Location = require('./locations.model')
 const locationsService = require('./locations.service')
-const User = require('../users/users.model');
-const userService = require('../users/users.service');
+//const User = require('../users/users.model');
+//const userService = require('../users/users.service');
 const passport = require('passport');
 require('../strategies/local.js');
 

@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt"); // import bcrypt to hash passwords
 const jwt = require("jsonwebtoken"); // import jwt to sign tokens
-const { get } = require("mongoose");
 const User = require('./users.model')
 require('dotenv').config()
 
@@ -9,11 +8,15 @@ async function findAll () {
     return users
 }
 
+async function findOne(data) {
+    const user = await User.findOne(data)
+    if (!user) throw new Error("Not found")
+    return user
+}
+
 async function checkPassword(username, password) {
     const user = await User.findOne({username})
     if (!user) throw new Error("No user")
-    console.log(password)
-    console.log(user.password)
     return await bcrypt.compareSync(password, user.password)
 }
 
@@ -38,14 +41,14 @@ async function generateAuthTokenAndSaveUser(user) {
 
 async function getUser(id) {
     const userInfo = await User.findOne({_id: id})
-    if (!userInfo) return userInfo
+    if (!userInfo) throw new Error("Non")
+    return userInfo
 }
 
 async function updateUser(id, property) {
     try {
         property.role = null
-        await User.findOneAndUpdate({_id: id}, property);
-        return await getUser(id);
+        return await User.findOneAndUpdate({_id: id}, property);
     } catch(e) {
         return null;
     }
@@ -60,19 +63,12 @@ async function deleteUser(id) {
     }
 }
 
-module.exports = [
-    register, 
-    findAll,
-    getUser,
-    generateAuthTokenAndSaveUser,
-    checkPassword,
-    updateUser,
-    deleteUser
-]
-
+module.exports.User = User;
 module.exports.register = register;
 module.exports.findAll = findAll;
+module.exports.findOne = findOne;
 module.exports.checkPassword = checkPassword;
 module.exports.getUser = getUser;
 module.exports.updateUser = updateUser;
 module.exports.deleteUser = deleteUser;
+module.exports.generateAuthTokenAndSaveUser = generateAuthTokenAndSaveUser;
